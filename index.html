@@ -35,7 +35,7 @@
   --z-modal:70; --z-power:90; --z-boot:100;
   --ease-out:cubic-bezier(.16,.84,.44,1);
   --ease-in-out:cubic-bezier(.65,0,.35,1);
-  --logo-size:min(68vw,560px);
+  --logo-size:min(52vmin,620px);
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -55,12 +55,12 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* Center brand logo — sole hero of the wallpaper */
 .center-logo{
-  position:fixed;left:50%;top:38%;
+  position:fixed;left:50%;top:46%;
   transform:translate(-50%,-50%);
   z-index:var(--z-logo);pointer-events:none;
   width:var(--logo-size);height:var(--logo-size);
   display:flex;align-items:center;justify-content:center;
-  opacity:1;filter:drop-shadow(0 0 48px rgba(79,216,255,.65));
+  opacity:1;filter:drop-shadow(0 0 56px rgba(79,216,255,.7));
 }
 .center-logo__mark{
   width:100%;height:100%;
@@ -397,8 +397,8 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .status-ticker,#statusTicker{display:none!important}
 @media (max-width:980px){.center-logo{opacity:1}}
 @media (max-width:680px){
-  .center-logo{--logo-size:min(72vw,320px);top:38%}
-  .center-logo__label{font-size:clamp(13px,3.6vw,18px);letter-spacing:0.08em;width:94vw;bottom:3.5vh;line-height:1.35}
+  .center-logo{--logo-size:min(70vmin,340px);top:40%}
+  .center-logo__label{font-size:clamp(12px,3.2vw,18px);letter-spacing:0.08em;width:94vw;bottom:3vh;line-height:1.4}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -1883,11 +1883,14 @@ const Settings = (() => {
 
 /* ======================== SECTION 22: DECRYPT TITLE ======================== */
 const DecryptTitle = (() => {
-  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>/\\|";
+  // ASCII / hacker scramble alphabet
+  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>/\\|+-=!?^~:;";
   const LINES = [
     "O'ZBEKISTON RESPUBLIKASI ICHKI ISHLAR VAZIRLIGI",
     "KIBERJINOYATLARGA QARSHI KURASHISH DEPARTAMENTI"
   ];
+  let timer = null;
+  let running = false;
 
   function buildLine(el, text) {
     el.dataset.text = text;
@@ -1895,85 +1898,103 @@ const DecryptTitle = (() => {
     const chars = [];
     for (let i = 0; i < text.length; i++) {
       const span = document.createElement('span');
-      span.className = 'ch' + (text[i] === ' ' ? ' is-space' : '');
-      span.textContent = text[i] === ' ' ? '\u00A0' : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      const isSpace = text[i] === ' ';
+      span.className = 'ch' + (isSpace ? ' is-space' : '');
+      // Hidden until this character's turn — spaces reserved
+      span.textContent = isSpace ? '\u00A0' : '';
+      if (isSpace) span.classList.add('is-locked');
       el.appendChild(span);
-      chars.push({ el: span, target: text[i], locked: text[i] === ' ' });
-      if (text[i] === ' ') {
-        span.textContent = '\u00A0';
-        span.classList.add('is-locked');
-      } else {
-        span.classList.add('is-scrambling');
-      }
+      chars.push({
+        el: span,
+        target: text[i],
+        locked: isSpace,
+        isSpace: isSpace
+      });
     }
     return chars;
+  }
+
+  function scrambleChar(c) {
+    c.el.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+    c.el.classList.add('is-scrambling');
+    c.el.classList.remove('is-locked');
+  }
+
+  function lockChar(c) {
+    c.locked = true;
+    c.el.textContent = c.isSpace ? '\u00A0' : c.target;
+    c.el.classList.remove('is-scrambling');
+    c.el.classList.add('is-locked');
+  }
+
+  function stop() {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    running = false;
   }
 
   function run() {
     const root = $('#deptTitle');
     if (!root) return;
+    stop();
+    running = true;
+
     const lineEls = $$('.center-logo__label-line', root);
     const all = lineEls.map(function (el, idx) {
       return buildLine(el, LINES[idx] || el.dataset.text || '');
     });
 
-    let frame = 0;
-    const totalFrames = 90; // ~1.5s at 60fps scramble then lock
-    const lockStart = 28;
-
-    function tick() {
-      frame++;
-      let done = true;
-      all.forEach(function (chars, lineIdx) {
-        const lineProgress = Math.max(0, frame - lineIdx * 10);
-        chars.forEach(function (c, i) {
-          if (c.locked) return;
-          const unlockAt = lockStart + i * 1.15 + lineIdx * 8;
-          if (lineProgress >= unlockAt) {
-            c.locked = true;
-            c.el.textContent = c.target === ' ' ? '\u00A0' : c.target;
-            c.el.classList.remove('is-scrambling');
-            c.el.classList.add('is-locked');
-          } else {
-            done = false;
-            if (frame % 2 === 0) {
-              c.el.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
-            }
-          }
-        });
+    // Flatten into sequential reveal order: line1 then line2
+    const queue = [];
+    all.forEach(function (chars) {
+      chars.forEach(function (c) {
+        if (!c.isSpace) queue.push(c);
+        // spaces already locked as placeholders
       });
-      if (!done && frame < 400) requestAnimationFrame(tick);
-      else if (!done) {
-        // force finish
-        all.forEach(function (chars) {
-          chars.forEach(function (c) {
-            c.locked = true;
-            c.el.textContent = c.target === ' ' ? '\u00A0' : c.target;
-            c.el.classList.remove('is-scrambling');
-            c.el.classList.add('is-locked');
-          });
-        });
+    });
+
+    let qi = 0;
+    const SCRAMBLE_STEPS = 10;      // how many ASCII flashes per letter
+    const STEP_MS = 70;             // delay between flashes
+    const BETWEEN_LETTER_MS = 90;   // pause before next letter
+
+    function nextLetter() {
+      if (!running || !STATE.running) return;
+      if (qi >= queue.length) {
+        // finished — replay later
+        timer = setTimeout(function () {
+          if (STATE.running) run();
+        }, 14000);
+        return;
       }
-    }
-    requestAnimationFrame(tick);
 
-    // Replay decrypt every ~12s
-    setInterval(function () {
-      if (!STATE.running) return;
-      frame = 0;
-      all.length = 0;
-      lineEls.forEach(function (el, idx) {
-        all.push(buildLine(el, LINES[idx]));
-      });
-      requestAnimationFrame(tick);
-    }, 12000);
+      const c = queue[qi++];
+      let step = 0;
+
+      function flash() {
+        if (!running) return;
+        if (step < SCRAMBLE_STEPS) {
+          scrambleChar(c);
+          step++;
+          timer = setTimeout(flash, STEP_MS);
+        } else {
+          lockChar(c);
+          timer = setTimeout(nextLetter, BETWEEN_LETTER_MS);
+        }
+      }
+      flash();
+    }
+
+    // small lead-in before first letter
+    timer = setTimeout(nextLetter, 400);
   }
 
   function init() {
-    // slight delay so boot skip finishes
-    setTimeout(run, 200);
+    setTimeout(run, 300);
   }
-  return { init, run };
+  return { init, run, stop };
 })();
 
 
