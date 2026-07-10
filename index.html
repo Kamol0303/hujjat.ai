@@ -285,15 +285,25 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .notif time{display:block;font-size:9px;color:var(--clr-green-dim);margin-top:2px}
 @keyframes notif-in{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 @keyframes notif-out{to{opacity:0;transform:translateX(-12px)}}
-.notif-bell{position:fixed;z-index:var(--z-controls);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--panel-bg);border:1px solid var(--panel-border);color:var(--clr-green)}
+.corner-controls{
+  position:fixed;top:14px;right:28px;z-index:var(--z-controls);
+  display:flex;gap:8px;align-items:center;
+}
+.hud-clock{margin-right:210px}
+.notif-panel{
+  position:fixed;z-index:var(--z-controls);
+  top:56px;right:28px;left:auto;bottom:auto;
+  width:260px;max-height:300px;overflow-y:auto;
+  background:var(--panel-bg-solid);border:1px solid var(--panel-border);border-radius:var(--radius-md);
+  padding:10px;box-shadow:var(--glow-panel);
+  display:none;flex-direction:column;gap:6px;
+}
+.notif-bell{position:relative;z-index:var(--z-controls);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--panel-bg);border:1px solid var(--panel-border);color:var(--clr-green)}
 .notif-bell svg{width:15px;height:15px}
 .notif-bell__count{position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;padding:0 3px;border-radius:999px;background:var(--clr-red);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center}
 .notif-bell__count.is-on{display:flex}
-.notif-panel{position:fixed;z-index:var(--z-controls);width:260px;max-height:300px;overflow-y:auto;background:var(--panel-bg-solid);border:1px solid var(--panel-border);border-radius:var(--radius-md);padding:10px;box-shadow:var(--glow-panel);display:none;flex-direction:column;gap:6px}
 .notif-panel.is-open{display:flex}
 .notif-panel__empty{color:var(--clr-green-dim);font-size:11px;text-align:center;padding:10px 0}
-
-.corner-controls{position:fixed;bottom:18px;left:18px;z-index:var(--z-controls);display:flex;gap:8px}
 .corner-btn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--panel-bg);border:1px solid var(--panel-border);color:var(--clr-green);transition:border-color .15s,color .15s,transform .15s}
 .corner-btn:hover{border-color:var(--panel-border-hi);color:var(--clr-green-bright);transform:translateY(-2px)}
 .corner-btn svg{width:15px;height:15px}
@@ -346,7 +356,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .mouse-trail{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:var(--z-controls);background:rgba(61,255,122,.35);box-shadow:0 0 12px rgba(61,255,122,.5);transform:translate(-50%,-50%);opacity:0;transition:opacity .2s}
 
 @media (max-width:980px){.sysmon{display:none}.window{width:300px}.hud-brand{font-size:12px;letter-spacing:2px}.hud-clock .hud-time{font-size:17px}.center-logo{opacity:.16}}
-@media (max-width:680px){.radar{width:120px;height:120px;bottom:84px;right:14px}.hud-top{padding:12px 14px}.hud-threat{display:none}.window{width:min(88vw,320px)}.notif-stack{left:14px;width:min(76vw,260px);top:78px}.corner-controls{left:14px;bottom:14px}.center-logo{--logo-size:min(40vw,160px)}}
+@media (max-width:680px){.radar{width:120px;height:120px;bottom:84px;right:14px}.hud-top{padding:12px 14px}.hud-threat{display:none}.window{width:min(88vw,320px)}.notif-stack{left:14px;width:min(76vw,260px);top:78px}.corner-controls{top:10px;right:12px}.hud-clock{margin-right:0;display:none}.notif-panel{top:50px;right:12px}.center-logo{--logo-size:min(40vw,160px)}}
 @media (max-width:480px){.hud-brand small{display:none}.boot-title{font-size:14px;letter-spacing:4px}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -419,7 +429,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
     <span class="notif-bell__count" id="notifCount">0</span>
   </button>
 </div>
-<div class="notif-panel" id="notifPanel" style="bottom:60px;left:18px"></div>
+<div class="notif-panel" id="notifPanel"></div>
 
 <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
   <div class="modal">
