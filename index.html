@@ -108,9 +108,16 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 }
 .center-logo__label-line .ch{
   display:inline-block;
-  min-width:0.52em;
+  min-width:0;
 }
 .center-logo__label-line .ch.is-space{min-width:0.35em}
+.center-logo__label-line .ch.is-scrambling,
+.center-logo__label-line .ch.is-locked{
+  min-width:0.52em;
+}
+.center-logo__label-line .ch:not(.is-scrambling):not(.is-locked):not(.is-space){
+  width:0;min-width:0;overflow:hidden;opacity:0;
+}
 .center-logo__label-line .ch.is-scrambling{
   color:var(--clr-cyan);
   text-shadow:0 0 10px rgba(79,216,255,.7);
@@ -1997,14 +2004,16 @@ const DecryptTitle = (() => {
       const span = document.createElement('span');
       const isSpace = text[i] === ' ';
       span.className = 'ch' + (isSpace ? ' is-space' : '');
-      // Hidden until this character's turn — spaces reserved
       span.textContent = isSpace ? '\u00A0' : '';
-      if (isSpace) span.classList.add('is-locked');
+      // spaces keep layout gaps only once previous word started — reserve later
+      if (isSpace) {
+        span.style.display = 'none'; // reveal with previous/next letter flow
+      }
       el.appendChild(span);
       chars.push({
         el: span,
         target: text[i],
-        locked: isSpace,
+        locked: false,
         isSpace: isSpace
       });
     }
@@ -2019,9 +2028,11 @@ const DecryptTitle = (() => {
 
   function lockChar(c) {
     c.locked = true;
+    c.el.style.display = '';
     c.el.textContent = c.isSpace ? '\u00A0' : c.target;
     c.el.classList.remove('is-scrambling');
     c.el.classList.add('is-locked');
+    if (c.isSpace) c.el.classList.add('is-space');
   }
 
   function stop() {
@@ -2043,24 +2054,20 @@ const DecryptTitle = (() => {
       return buildLine(el, LINES[idx] || el.dataset.text || '');
     });
 
-    // Flatten into sequential reveal order: line1 then line2
+    // Sequential: every character including spaces, line1 then line2
     const queue = [];
     all.forEach(function (chars) {
-      chars.forEach(function (c) {
-        if (!c.isSpace) queue.push(c);
-        // spaces already locked as placeholders
-      });
+      chars.forEach(function (c) { queue.push(c); });
     });
 
     let qi = 0;
-    const SCRAMBLE_STEPS = 10;      // how many ASCII flashes per letter
-    const STEP_MS = 70;             // delay between flashes
-    const BETWEEN_LETTER_MS = 90;   // pause before next letter
+    const SCRAMBLE_STEPS = 10;
+    const STEP_MS = 70;
+    const BETWEEN_LETTER_MS = 90;
 
     function nextLetter() {
       if (!running || !STATE.running) return;
       if (qi >= queue.length) {
-        // finished — replay later
         timer = setTimeout(function () {
           if (STATE.running) run();
         }, 14000);
@@ -2068,8 +2075,13 @@ const DecryptTitle = (() => {
       }
 
       const c = queue[qi++];
-      let step = 0;
+      if (c.isSpace) {
+        lockChar(c);
+        timer = setTimeout(nextLetter, BETWEEN_LETTER_MS * 0.6);
+        return;
+      }
 
+      let step = 0;
       function flash() {
         if (!running) return;
         if (step < SCRAMBLE_STEPS) {
@@ -2084,7 +2096,6 @@ const DecryptTitle = (() => {
       flash();
     }
 
-    // small lead-in before first letter
     timer = setTimeout(nextLetter, 400);
   }
 
