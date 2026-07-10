@@ -14,15 +14,17 @@
    ========================================================================= */
 
 :root{
-  --clr-bg:#05080a; --clr-bg-deep:#010202;
-  --clr-green:#3dff7a; --clr-green-bright:#b6ffd9;
-  --clr-green-dim:#1f8a45; --clr-green-mute:#123018;
-  --clr-cyan:#4fd8ff; --clr-cyan-dim:#1f6b80;
+  --clr-bg:#020b18; --clr-bg-deep:#01060f;
+  --clr-green:#3dff7a; --clr-green-bright:#ffffff;
+  --clr-green-dim:#7eb6d6; --clr-green-mute:#0a2a3d;
+  --clr-cyan:#4fd8ff; --clr-cyan-dim:#1a6a88;
+  --clr-navy:#071428; --clr-navy-mid:#0a1f38;
   --clr-amber:#ffb238; --clr-red:#ff4d5e; --clr-red-dim:#7a1a24;
   --panel-bg:rgba(4,12,8,.90); --panel-bg-solid:#081208;
   --panel-border:rgba(31,138,69,.5); --panel-border-hi:var(--clr-green);
   --panel-header-bg:linear-gradient(180deg,#0d1f12,#060f08);
   --font-mono:'SFMono-Regular',Consolas,Menlo,Monaco,'Cascadia Code','Courier New',monospace;
+  --font-ui:'Segoe UI',Tahoma,'Noto Sans',Arial,sans-serif;
   --radius-sm:3px; --radius-md:8px;
   --glow-text-sm:0 0 4px rgba(61,255,122,.55);
   --glow-text-md:0 0 10px rgba(61,255,122,.65);
@@ -35,7 +37,7 @@
   --z-modal:70; --z-power:90; --z-boot:100;
   --ease-out:cubic-bezier(.16,.84,.44,1);
   --ease-in-out:cubic-bezier(.65,0,.35,1);
-  --logo-size:min(11.5vmin, 12vw);
+  --logo-size:min(34vmin, 30vw);
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -51,21 +53,29 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 #bgCanvas,#fxCanvas{position:fixed;inset:0;display:block}
 #bgCanvas{z-index:var(--z-bg)}
-#fxCanvas{z-index:var(--z-fx);pointer-events:none;filter:drop-shadow(0 0 2.5px rgba(61,255,122,.55))}
+#fxCanvas{z-index:var(--z-fx);pointer-events:none;filter:drop-shadow(0 0 2px rgba(79,216,255,.25));opacity:.55}
 
-/* Center brand logo — sole hero of the wallpaper */
+/* Hero composition — reference layout: emblem upper, title below */
+.hero{
+  position:fixed;inset:0;z-index:var(--z-logo);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(28px, 4.5vh, 56px);
+  padding:6vh 4vw 8vh;
+  pointer-events:none;
+}
 .center-logo{
-  position:fixed;left:50%;top:44%;
-  transform:translate(-50%,-50%);
-  z-index:var(--z-logo);pointer-events:none;
+  position:relative;left:auto;top:auto;
+  transform:none;
   width:var(--logo-size);height:var(--logo-size);
   display:flex;align-items:center;justify-content:center;
-  opacity:1;filter:drop-shadow(0 0 64px rgba(79,216,255,.75));
+  opacity:1;
+  filter:drop-shadow(0 0 28px rgba(79,216,255,.35)) drop-shadow(0 12px 40px rgba(0,0,0,.55));
+  flex-shrink:0;
 }
 .center-logo__mark{
   width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;
-  animation:logo-pulse 2.8s ease-in-out infinite;
+  animation:logo-pulse 3.2s ease-in-out infinite;
   transform-origin:center center;
 }
 .center-logo img,.center-logo svg{
@@ -75,17 +85,18 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .center-logo__ring,
 .center-logo__ring--outer{display:none}
 .center-logo__label{
-  position:fixed;left:50%;bottom:3.2vh;transform:translateX(-50%);
+  position:relative;left:auto;bottom:auto;transform:none;
   z-index:var(--z-logo);
-  width:min(96vw, 1600px);
+  width:min(92vw, 920px);
   text-align:center;
-  font-size:clamp(8px, 0.55vw, 12px);
-  font-weight:800;
+  font-family:var(--font-ui);
+  font-size:clamp(15px, 1.55vw, 28px);
+  font-weight:700;
   line-height:1.45;
-  letter-spacing:0.16em;
-  text-transform:uppercase;
-  color:var(--clr-green-bright);
-  text-shadow:var(--glow-text-md);
+  letter-spacing:0.04em;
+  text-transform:none;
+  color:#ffffff;
+  text-shadow:0 2px 18px rgba(0,40,80,.65);
   white-space:normal;
   opacity:1;
   pointer-events:none;
@@ -97,22 +108,23 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 }
 .center-logo__label-line .ch{
   display:inline-block;
-  min-width:0.55em;
+  min-width:0.52em;
 }
-.center-logo__label-line .ch.is-space{min-width:0.45em}
+.center-logo__label-line .ch.is-space{min-width:0.35em}
 .center-logo__label-line .ch.is-scrambling{
   color:var(--clr-cyan);
-  text-shadow:var(--glow-cyan);
-  opacity:0.85;
+  text-shadow:0 0 10px rgba(79,216,255,.7);
+  opacity:0.9;
 }
 .center-logo__label-line .ch.is-locked{
-  color:var(--clr-green-bright);
-  text-shadow:var(--glow-text-md);
+  color:#ffffff;
+  text-shadow:0 2px 18px rgba(0,40,80,.65);
 }
 @keyframes logo-pulse{
   0%,100%{transform:scale(1)}
-  50%{transform:scale(1.04)}
+  50%{transform:scale(1.035)}
 }
+
 @keyframes logo-breathe{0%,100%{opacity:1}50%{opacity:1}}
 @keyframes logo-spin{to{transform:rotate(360deg)}}
 @keyframes logo-ring{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:1}}
@@ -121,7 +133,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   position:fixed;inset:0;z-index:var(--z-crt);pointer-events:none;
   background:
     radial-gradient(ellipse 85% 75% at 50% 48%,rgba(0,0,0,0) 45%,rgba(0,0,0,.62) 100%),
-    radial-gradient(ellipse 140% 140% at 50% 50%,rgba(10,25,15,.05),rgba(0,0,0,.35) 100%);
+    radial-gradient(ellipse 140% 140% at 50% 50%,rgba(10,40,70,.12),rgba(0,0,0,.55) 100%);
 }
 .crt-scanlines{
   position:fixed;inset:0;z-index:var(--z-crt);pointer-events:none;
@@ -130,7 +142,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 }
 .crt-flicker{
   position:fixed;inset:0;z-index:var(--z-crt);pointer-events:none;
-  background:rgba(61,255,122,.02);animation:flicker 6.5s infinite;
+  background:rgba(79,216,255,.015);animation:flicker 6.5s infinite;
 }
 @keyframes flicker{
   0%,100%{opacity:0}3%{opacity:.5}3.2%{opacity:0}
@@ -397,8 +409,9 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .status-ticker,#statusTicker{display:none!important}
 @media (max-width:980px){.center-logo{opacity:1}}
 @media (max-width:680px){
-  .center-logo{--logo-size:min(18vmin,22vw);top:40%}
-  .center-logo__label{font-size:clamp(7px,1.4vw,10px);letter-spacing:0.06em;width:94vw;bottom:3vh;line-height:1.4}
+  .hero{gap:22px;padding:5vh 4vw 7vh}
+  .center-logo{--logo-size:min(42vmin,58vw)}
+  .center-logo__label{font-size:clamp(12px,3.4vw,16px);letter-spacing:0.03em;width:92vw}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -413,6 +426,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 <canvas id="bgCanvas" aria-hidden="true"></canvas>
 <canvas id="fxCanvas" aria-hidden="true"></canvas>
 
+<div class="hero" id="hero">
 <div class="center-logo" id="centerLogo" aria-hidden="true">
 
   <div class="center-logo__mark">
@@ -422,8 +436,9 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   </div>
 </div>
 <div class="center-logo__label" id="deptTitle" aria-label="IIV Kiberjinoyatlar">
-  <span class="center-logo__label-line" data-text="O'ZBEKISTON RESPUBLIKASI ICHKI ISHLAR VAZIRLIGI"></span>
-  <span class="center-logo__label-line" data-text="KIBERJINOYATLARGA QARSHI KURASHISH DEPARTAMENTI"></span>
+  <span class="center-logo__label-line" data-text="O'zbekiston Respublikasi Ichki ishlar vazirligi"></span>
+  <span class="center-logo__label-line" data-text="Kiberjinoyatlarga qarshi kurashish departamenti"></span>
+</div>
 </div>
 
 <div class="crt-vignette"></div>
@@ -532,8 +547,8 @@ const CONFIG = Object.freeze({
     fade: 0.02,
     charset: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*+-<>'
   },
-  particles: { count: 90, linkDist: 110, mouseRadius: 140 },
-  grid: { spacing: 48, speed: 0.35 },
+  particles: { count: 55, linkDist: 100, mouseRadius: 130 },
+  grid: { spacing: 16, speed: 0.12 },
   radar: { blipEveryMs: 1600 },
   threatCycleMs: 28000,
   notifEveryMs: 9000,
@@ -611,11 +626,42 @@ const AnimEngine = (() => {
   return { start, stop, add, remove };
 })();
 
-/* ======================== SECTION 4: MATRIX ENGINE ======================== */
+/* ======================== SECTION 4: CYBER BACKDROP ======================== */
 const MatrixEngine = (() => {
   let canvas, ctx, w = 0, h = 0, dpr = 1;
-  const layers = [];
-  const glyphs = CONFIG.matrix.charset;
+  let binaryCols = [];
+  let circuits = [];
+  let t = 0;
+
+  function rebuildDecor() {
+    binaryCols = [];
+    const colCount = Math.max(10, Math.floor(w / 90));
+    for (let i = 0; i < colCount; i++) {
+      const side = i % 2 === 0 ? 'L' : 'R';
+      const x = side === 'L'
+        ? rand(12, w * 0.22)
+        : rand(w * 0.78, w - 12);
+      binaryCols.push({
+        x: x,
+        speed: rand(18, 42),
+        offset: rand(0, 400),
+        alpha: rand(0.08, 0.22),
+        size: rand(9, 12)
+      });
+    }
+    circuits = [];
+    for (let i = 0; i < 18; i++) {
+      const x = rand(0, w);
+      const y = rand(0, h);
+      const len = rand(40, 160);
+      const horiz = Math.random() > 0.45;
+      circuits.push({
+        x, y, len, horiz,
+        nodes: randInt(1, 3),
+        alpha: rand(0.08, 0.2)
+      });
+    }
+  }
 
   function resize() {
     canvas = $('#bgCanvas');
@@ -628,43 +674,94 @@ const MatrixEngine = (() => {
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    layers.length = 0;
+    rebuildDecor();
+  }
+
+  function drawBackdrop() {
+    // Navy radial field like the reference card
+    const g = ctx.createRadialGradient(w * 0.5, h * 0.42, 40, w * 0.5, h * 0.5, Math.max(w, h) * 0.72);
+    g.addColorStop(0, '#0d2744');
+    g.addColorStop(0.45, '#071a31');
+    g.addColorStop(1, '#020912');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // Dense micro-dot grid
+    ctx.fillStyle = 'rgba(140, 190, 230, 0.055)';
+    const step = 16;
+    for (let y = 0; y < h; y += step) {
+      for (let x = 0; x < w; x += step) {
+        ctx.fillRect(x, y, 1.2, 1.2);
+      }
+    }
+
+    // Soft vignette
+    const vg = ctx.createRadialGradient(w * 0.5, h * 0.45, Math.min(w, h) * 0.2, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  function drawBinary(dt) {
+    t += dt;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    binaryCols.forEach(function (col) {
+      ctx.font = col.size + 'px monospace';
+      ctx.fillStyle = 'rgba(180, 220, 255,' + col.alpha + ')';
+      const rowH = col.size + 6;
+      const shift = ((t * col.speed + col.offset) % rowH);
+      for (let y = -rowH + shift; y < h + rowH; y += rowH) {
+        ctx.fillText(Math.random() > 0.5 ? '1' : '0', col.x, y);
+      }
+    });
+  }
+
+  function drawCircuits() {
+    circuits.forEach(function (c) {
+      ctx.strokeStyle = 'rgba(64, 200, 220,' + c.alpha + ')';
+      ctx.fillStyle = 'rgba(64, 200, 220,' + (c.alpha + 0.08) + ')';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      if (c.horiz) {
+        ctx.moveTo(c.x, c.y);
+        ctx.lineTo(c.x + c.len, c.y);
+        for (let n = 0; n < c.nodes; n++) {
+          const nx = c.x + (c.len * (n + 1)) / (c.nodes + 1);
+          ctx.moveTo(nx, c.y);
+          ctx.lineTo(nx, c.y + (n % 2 ? 28 : -28));
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(nx, c.y + (n % 2 ? 28 : -28), 3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      } else {
+        ctx.moveTo(c.x, c.y);
+        ctx.lineTo(c.x, c.y + c.len);
+      }
+      ctx.stroke();
+    });
+
+    // Vertical dotted accents near center flanks
+    ctx.fillStyle = 'rgba(120, 200, 230, 0.18)';
+    [0.28, 0.34, 0.66, 0.72].forEach(function (px, idx) {
+      const x = w * px;
+      for (let y = h * 0.12; y < h * 0.88; y += 10 + (idx % 3)) {
+        const r = (y / 40 + idx) % 3 === 0 ? 1.8 : 1.1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
   }
 
   function draw(dt) {
     if (!ctx) return;
-    // Solid dark backdrop — matrix rain disabled
-    ctx.fillStyle = '#05080a';
-    ctx.fillRect(0, 0, w, h);
-    drawGrid(ctx, w, h, dt);
-  }
-
-  let gridPhase = 0;
-  function drawGrid(c, width, height, dt) {
-    gridPhase = (gridPhase + dt * CONFIG.grid.speed) % 1;
-    const sp = CONFIG.grid.spacing;
-    c.save();
-    c.strokeStyle = 'rgba(61,255,122,0.045)';
-    c.lineWidth = 1;
-    c.beginPath();
-    const offset = gridPhase * sp;
-    for (let x = -sp + offset; x < width + sp; x += sp) {
-      c.moveTo(x, 0); c.lineTo(x, height);
-    }
-    for (let y = -sp + offset; y < height + sp; y += sp) {
-      c.moveTo(0, y); c.lineTo(width, y);
-    }
-    c.stroke();
-    // horizon perspective lines
-    c.strokeStyle = 'rgba(79,216,255,0.04)';
-    c.beginPath();
-    const vanishingY = height * 0.55;
-    for (let i = -8; i <= 8; i++) {
-      c.moveTo(width / 2 + i * 40, vanishingY);
-      c.lineTo(width / 2 + i * 180, height);
-    }
-    c.stroke();
-    c.restore();
+    drawBackdrop();
+    drawCircuits();
+    if (!STATE.reducedMotion) drawBinary(dt);
+    else drawBinary(0);
   }
 
   function init() {
@@ -734,7 +831,7 @@ const ParticleEngine = (() => {
         const d2 = dx * dx + dy * dy;
         if (d2 < link * link) {
           const alpha = (1 - Math.sqrt(d2) / link) * 0.22;
-          ctx.strokeStyle = `rgba(61,255,122,${alpha})`;
+          ctx.strokeStyle = `rgba(79,216,255,${alpha * 0.7})`;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -745,7 +842,7 @@ const ParticleEngine = (() => {
 
     particles.forEach((p) => {
       ctx.beginPath();
-      ctx.fillStyle = `rgba(79,216,255,${p.a})`;
+      ctx.fillStyle = `rgba(180,230,255,${p.a * 0.55})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     });
@@ -1884,10 +1981,10 @@ const Settings = (() => {
 /* ======================== SECTION 22: DECRYPT TITLE ======================== */
 const DecryptTitle = (() => {
   // ASCII / hacker scramble alphabet
-  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>/\\|+-=!?^~:;";
+  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*<>/\\|+-=!?^~:;";
   const LINES = [
-    "O'ZBEKISTON RESPUBLIKASI ICHKI ISHLAR VAZIRLIGI",
-    "KIBERJINOYATLARGA QARSHI KURASHISH DEPARTAMENTI"
+    "O'zbekiston Respublikasi Ichki ishlar vazirligi",
+    "Kiberjinoyatlarga qarshi kurashish departamenti"
   ];
   let timer = null;
   let running = false;
@@ -2007,11 +2104,11 @@ const LogoFX = (() => {
       // Keep emblem fully visible in minimal mode
       root.style.opacity = '1';
       if (STATE.threat === 'critical') {
-        root.style.filter = 'drop-shadow(0 0 40px rgba(255,77,94,0.55))';
+        root.style.filter = 'drop-shadow(0 0 28px rgba(79,216,255,0.35)) drop-shadow(0 12px 40px rgba(0,0,0,0.55))';
       } else if (STATE.threat === 'elevated') {
-        root.style.filter = 'drop-shadow(0 0 36px rgba(255,178,56,0.45))';
+        root.style.filter = 'drop-shadow(0 0 28px rgba(255,178,56,0.35)) drop-shadow(0 12px 40px rgba(0,0,0,0.55))';
       } else {
-        root.style.filter = 'drop-shadow(0 0 36px rgba(79,216,255,0.55))';
+        root.style.filter = 'drop-shadow(0 0 28px rgba(79,216,255,0.35)) drop-shadow(0 12px 40px rgba(0,0,0,0.55))';
       }
     });
   }
