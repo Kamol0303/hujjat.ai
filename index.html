@@ -87,14 +87,14 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .center-logo__label{
   position:relative;left:auto;bottom:auto;transform:none;
   z-index:var(--z-logo);
-  width:min(92vw, 920px);
+  width:min(94vw, 1100px);
   text-align:center;
   font-family:var(--font-ui);
-  font-size:clamp(15px, 1.55vw, 28px);
-  font-weight:700;
-  line-height:1.45;
-  letter-spacing:0.04em;
-  text-transform:none;
+  font-size:clamp(22px, 2.6vw, 44px);
+  font-weight:800;
+  line-height:1.4;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
   color:#ffffff;
   text-shadow:0 2px 18px rgba(0,40,80,.65);
   white-space:normal;
@@ -418,7 +418,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 @media (max-width:680px){
   .hero{gap:22px;padding:5vh 4vw 7vh}
   .center-logo{--logo-size:min(42vmin,58vw)}
-  .center-logo__label{font-size:clamp(12px,3.4vw,16px);letter-spacing:0.03em;width:92vw}
+  .center-logo__label{font-size:clamp(14px,3.6vw,22px);letter-spacing:0.04em;width:94vw}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -443,8 +443,8 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   </div>
 </div>
 <div class="center-logo__label" id="deptTitle" aria-label="IIV Kiberjinoyatlar">
-  <span class="center-logo__label-line" data-text="O'zbekiston Respublikasi Ichki ishlar vazirligi"></span>
-  <span class="center-logo__label-line" data-text="Kiberjinoyatlarga qarshi kurashish departamenti"></span>
+  <span class="center-logo__label-line" data-text="O'ZBEKISTON RESPUBLIKASI ICHKI ISHLAR VAZIRLIGI"></span>
+  <span class="center-logo__label-line" data-text="TEZKOR-QIDIRUV DEPARTAMENTI KIBERXAVFSIZLIK MARKAZI"></span>
 </div>
 </div>
 
@@ -1990,8 +1990,8 @@ const DecryptTitle = (() => {
   // ASCII / hacker scramble alphabet
   const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*<>/\\|+-=!?^~:;";
   const LINES = [
-    "O'zbekiston Respublikasi Ichki ishlar vazirligi",
-    "Kiberjinoyatlarga qarshi kurashish departamenti"
+    "O'ZBEKISTON RESPUBLIKASI ICHKI ISHLAR VAZIRLIGI",
+    "TEZKOR-QIDIRUV DEPARTAMENTI KIBERXAVFSIZLIK MARKAZI"
   ];
   let timer = null;
   let running = false;
