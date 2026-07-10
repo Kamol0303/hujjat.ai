@@ -580,53 +580,14 @@ const MatrixEngine = (() => {
     canvas.style.height = h + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     layers.length = 0;
-    CONFIG.matrix.layers.forEach((cfg) => {
-      const cols = Math.ceil(w / cfg.size) + 1;
-      layers.push({
-        ...cfg,
-        cols,
-        drops: Float32Array.from({ length: cols }, () => rand(0, h / cfg.size)),
-        speeds: Float32Array.from({ length: cols }, () => cfg.speed * rand(0.6, 1.4)),
-        bright: Uint8Array.from({ length: cols }, () => randInt(120, 255))
-      });
-    });
   }
 
   function draw(dt) {
     if (!ctx) return;
-    ctx.fillStyle = `rgba(5,8,10,${CONFIG.matrix.fade})`;
+    // Solid dark backdrop — matrix rain disabled
+    ctx.fillStyle = '#05080a';
     ctx.fillRect(0, 0, w, h);
-
-    // Perspective digital grid under rain
     drawGrid(ctx, w, h, dt);
-
-    layers.forEach((layer) => {
-      ctx.font = `${layer.size}px monospace`;
-      ctx.textBaseline = 'top';
-      for (let i = 0; i < layer.cols; i++) {
-        const x = i * layer.size;
-        const y = layer.drops[i] * layer.size;
-        const ch = glyphs[(Math.random() * glyphs.length) | 0];
-        const b = layer.bright[i];
-        if (layer.glow && Math.random() > 0.92) {
-          ctx.fillStyle = `rgba(182,255,217,${layer.alpha})`;
-        } else {
-          ctx.fillStyle = `rgba(61,255,122,${(b / 255) * layer.alpha})`;
-        }
-        ctx.fillText(ch, x, y);
-        // head glow
-        if (layer.glow) {
-          ctx.fillStyle = `rgba(182,255,217,${0.55 * layer.alpha})`;
-          ctx.fillText(ch, x, y);
-        }
-        layer.drops[i] += layer.speeds[i] * (STATE.reducedMotion ? 0.08 : 0.55);
-        if (y > h && Math.random() > 0.975) {
-          layer.drops[i] = 0;
-          layer.bright[i] = randInt(120, 255);
-          layer.speeds[i] = layer.speed * rand(0.6, 1.4);
-        }
-      }
-    });
   }
 
   let gridPhase = 0;
